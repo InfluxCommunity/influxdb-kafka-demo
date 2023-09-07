@@ -9,7 +9,7 @@ To run this example repo follow these steps:
 3. Wait 30 seconds before Telegraf is ready to write metrics
 
 ## Files
--`app/garden_sensor_gateway.py`: is a Python Script uses the KafkaProducer class from the kafka package to send generated garden sensor data to a Kafka topic. It includes random humidity, temperature, wind, and soil data. 
--`app/Dockerfile`: creates a container that runs `garden_sensor_gateway.py`
--`resources/docker-compose`: creates the containers the kafka, zookeeper, telegraf and garden_sensor_gateway containers
--`resources/mytelegraf.conf`: contains the telegraf configuration to subscribe to the kafka topic and write the garden data to InfluxDB Cloud v3. 
+- `app/garden_sensor_gateway.py`: is a Python Script uses the KafkaProducer class from the kafka package to send generated garden sensor data to a Kafka topic. It includes random humidity, temperature, wind, and soil data. 
+- `app/Dockerfile`: creates a container that runs `garden_sensor_gateway.py`
+- `resources/docker-compose`: creates the containers the kafka, zookeeper, telegraf and garden_sensor_gateway containers
+- `resources/mytelegraf.conf`: contains the telegraf configuration to subscribe to the kafka topic and write the garden data to InfluxDB Cloud v3. 
