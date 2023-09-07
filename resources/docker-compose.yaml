@@ -1,19 +1,6 @@
 version: '3.3'
 
 services:
-
-  zookeeper:
-    container_name: zookeeper
-    image: quay.io/strimzi/kafka:0.28.0-kafka-3.1.0
-    command: [
-        "sh", "-c",
-        "bin/zookeeper-server-start.sh config/zookeeper.properties"
-      ]
-    ports:
-    - "2181:2181"
-    environment:
-      LOG_DIR: /tmp/logs
-
   kafka:
     container_name: kafka
     image: quay.io/strimzi/kafka:0.28.0-kafka-3.1.0
@@ -27,8 +14,45 @@ services:
     - "9092:9092"
     environment:
       LOG_DIR: "/tmp/logs"
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    healthcheck:
+      test: ["CMD", "nc", "-z", "kafka", "9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
+    
+  zookeeper:
+    container_name: zookeeper
+    image: quay.io/strimzi/kafka:0.28.0-kafka-3.1.0
+    command: [
+        "sh", "-c",
+        "bin/zookeeper-server-start.sh config/zookeeper.properties"
+      ]
+    ports:
+    - "2181:2181"
+    environment:
+      LOG_DIR: /tmp/logs
+  
+  garden_sensor_gateway:
+    container_name: garden_sensor_gateway
+    image: garden_sensor_gateway
+    build: ../app
+    # networks:
+    #  - my_network
+    # command: ["tail", "-f", "/dev/null"]
+    depends_on:
+      kafka:
+       condition: service_healthy
 
+  telegraf:
+    container_name: telegraf
+    image: telegraf:latest
+    command: ["telegraf", "--debug", "--config", "/etc/telegraf/telegraf.conf"]
+    volumes:
+      - ./mytelegraf.conf:/etc/telegraf/telegraf.conf
+    depends_on:
+      kafka:
+       condition: service_healthy

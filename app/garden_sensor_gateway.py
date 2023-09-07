@@ -28,7 +28,7 @@ def get_json_data():
     return json.dumps(data) 
 
 def main():
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+    producer = KafkaProducer(bootstrap_servers=['kafka:9092'])
 
     for _ in range(20000):
         json_data = get_json_data()
